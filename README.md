@@ -98,13 +98,17 @@ is what `router.php` is for — it applies the same rules.
 
 ## Database
 
-Import once, in this order:
+For a fresh install, import these two:
 
 ```bash
-mysql -u USER -p DATABASE < database/schema.sql
-mysql -u USER -p DATABASE < database/entries.sql
-mysql -u USER -p DATABASE < database/update-retention.sql
+mysql -u USER -p < database/schema.sql          # creates the database and three tables
+mysql -u USER -p my_profile < database/entries.sql
 ```
+
+`database/update-retention.sql` is **not** part of a fresh install. It is a
+migration that adds the auto-delete columns to a `contact_messages` table
+created before that feature existed; `schema.sql` already includes them, so
+running it on a new database fails with "Duplicate column name".
 
 Then put the credentials in `config/config.php`. That file is never served —
 it lives outside the document-root-visible tree and `.htaccess` blocks the
