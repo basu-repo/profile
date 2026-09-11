@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Basudeo Narayan Shrestha</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">Basudeo Shrestha</div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html" class="active">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Contact Section -->
+    <section class="page-content">
+        <div class="container">
+            <h1>Get In Touch</h1>
+            <div class="contact-section">
+                <div class="contact-info">
+                    <h2>Contact Information</h2>
+                    <p><strong>Email:</strong> <a href="mailto:shrestha.basudeo88@gmail.com">shrestha.basudeo88@gmail.com</a></p>
+                    <p><strong>Phone:</strong> +46 76 432 0803</p>
+                    <p><strong>Location:</strong> Oxie, Malmo</p>
+                    <p><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/basudeo-shrestha-785b80ba/" target="_blank">View LinkedIn Profile</a></p>
+                </div>
+
+                <div class="contact-form">
+                    <h2>Send Me a Message</h2>
+                    <form id="contactForm" novalidate>
+                        <div class="form-group">
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="name" maxlength="120" autocomplete="name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" maxlength="254" autocomplete="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Message:</label>
+                            <textarea id="message" name="message" rows="5" maxlength="500" required></textarea>
+                            <small id="messageCounter" class="form-meta">0/500 characters</small>
+                        </div>
+
+                        <div class="hp-field" aria-hidden="true">
+                            <label for="website">Website</label>
+                            <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                        </div>
+
+                        <input type="hidden" id="submittedAt" name="submittedAt" value="">
+
+                        <p class="form-meta">Your message will be validated and saved securely in the website database.</p>
+
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                    <div id="formMessage"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Basudeo Shrestha. All rights reserved.</p>
+            <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

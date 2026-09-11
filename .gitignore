@@ -1,0 +1,15 @@
+# Database credentials. Never commit this -- copy config/config.example.php
+# to config/config.php on each machine and fill it in there.
+config/config.php
+/config.php
+
+# Runtime data written by the application
+storage/*.log
+uploads/
+
+# Local tooling and OS noise
+.vscode/
+.codex
+.DS_Store
+Thumbs.db
+*.swp

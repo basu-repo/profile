@@ -1,0 +1,56 @@
+# Security hardening for Apache/cPanel
+# RewriteOptions inherit is intentionally EXCLUDED to prevent inheriting malicious rules from parent directories
+
+DirectoryIndex index.php index.html
+
+# Disable directory listing
+Options -Indexes
+
+# Prevent content type sniffing and clickjacking
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+  # Strict CSP for this site's current assets
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net data:; img-src 'self' data:; connect-src 'self'; frame-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests"
+
+  # Enable HSTS only when site is served over HTTPS
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" env=HTTPS
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Canonical domain redirect
+  RewriteCond %{HTTP_HOST} ^basudeoshrestha\.com\.np$ [OR]
+  RewriteCond %{HTTP_HOST} ^www\.basudeoshrestha\.com\.np$
+  RewriteCond %{HTTPS} on
+  RewriteRule ^ https://basudeoshrestha.com.np%{REQUEST_URI} [R=301,L]
+
+  # Force HTTPS
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP_HOST} !^localhost$ [NC]
+  RewriteCond %{HTTP_HOST} !^127\.0\.0\.1$ [NC]
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # Block access to storage directory
+  RewriteRule ^storage/ - [F,L]
+  RewriteRule ^includes/ - [F,L]
+
+  # Research entries and the Now page
+  RewriteRule ^research/?$ /research.php [L]
+  RewriteRule ^research/([A-Za-z0-9_-]+)/?$ /research.php?slug=$1 [L,QSA]
+  RewriteRule ^now/?$ /now.php [L]
+
+  # Prefer PHP-powered pages while preserving old .html links
+  RewriteRule ^index\.html$ /index.php [L]
+  RewriteRule ^about\.html$ /about.php [L]
+  RewriteRule ^contact\.html$ /contact.php [L]
+</IfModule>
+
+# Deny access to sensitive files
+<FilesMatch "^(\.env|composer\.(json|lock)|package\.json|package-lock\.json|yarn\.lock|README\.md|mail_debug\.log|contact_messages\.csv|config\.php|database\.sql)$">
+  Require all denied
+</FilesMatch>
