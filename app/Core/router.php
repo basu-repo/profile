@@ -38,7 +38,14 @@ function route_pattern_to_regex(string $pattern): string
 
 function route_dispatch(array $routes): void
 {
+    // A HEAD request must run its GET handler; the web server drops the body.
+    // Without this every monitor, link checker and crawler that probes with
+    // HEAD gets a 405 where Apache used to answer 200.
     $method = route_method();
+    if ($method === 'HEAD') {
+        $method = 'GET';
+    }
+
     $path = route_path();
     $pathMatchedOtherMethod = false;
 
@@ -78,11 +85,22 @@ function route_fail(int $statusCode): void
         return;
     }
 
-    view('pages/error', [
-        'statusCode' => $statusCode,
-        'heading' => $statusCode === 405 ? 'Method not allowed' : 'Not found',
-        'note' => $statusCode === 405
-            ? 'That address does not accept this kind of request.'
-            : 'There is no page at that address.',
-    ]);
+    $heading = $statusCode === 405 ? 'Method not allowed' : 'Not found';
+    $note = $statusCode === 405
+        ? 'That address does not accept this kind of request.'
+        : 'There is no page at that address.';
+
+    // The error page reads the site name and footer from the database, so a
+    // miss while the database is down would otherwise turn a 404 into an
+    // uncaught exception. Fall back to plain text instead.
+    try {
+        view('pages/error', [
+            'statusCode' => $statusCode,
+            'heading' => $heading,
+            'note' => $note,
+        ]);
+    } catch (Throwable $exception) {
+        header('Content-Type: text/plain; charset=UTF-8');
+        echo $heading . "\n" . $note . "\n";
+    }
 }

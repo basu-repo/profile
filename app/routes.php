@@ -28,6 +28,11 @@ return [
     'GET /about' => static fn(): mixed => about_index(),
     'GET /contact' => static fn(): mixed => contact_index(),
     'GET|POST /contact/submit' => static fn(): mixed => contact_submit(),
+    // Browsers holding a cached copy of the old script.js still post here.
+    // It is a route rather than a rewrite because an internal rewrite leaves
+    // REQUEST_URI pointing at the original address, which is what the router
+    // matches on -- so the rewrite never reached this handler.
+    'GET|POST /submit-form.php' => static fn(): mixed => contact_submit(),
     'GET /now' => static fn(): mixed => now_index(),
     'GET /research' => static fn(): mixed => research_index(),
     'GET /research/{slug}' => static fn(array $p): mixed => research_show($p),

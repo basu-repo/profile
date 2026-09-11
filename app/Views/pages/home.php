@@ -243,6 +243,6 @@
 
     <button id="scrollToTop" title="Back to top"><i class="fas fa-arrow-up"></i></button>
 
-    <script src="/js/script.js?v=20260423a"></script>
+    <script src="/js/script.js?v=20260911a"></script>
 </body>
 </html>

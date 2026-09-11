@@ -40,7 +40,7 @@ Options -Indexes
   # the asset folders (css, js, images, certificates, uploads) and the
   # favicon are reachable from the web.
   # ---------------------------------------------------------------------
-  RewriteRule ^(app|bin|config|database|storage|legacy)(/|$) - [F,L]
+  RewriteRule ^(app|bin|config|database|storage|legacy|includes)(/|$) - [F,L]
 
   # ---------------------------------------------------------------------
   # Addresses this site used before the MVC restructure. They redirect to
@@ -57,9 +57,9 @@ Options -Indexes
   RewriteRule ^research\.php$ /research/%1? [R=301,L]
   RewriteRule ^research\.php$ /research [R=301,L]
 
-  # Posted to by any page still serving the old markup, so it stays an
-  # internal rewrite -- a redirect would drop the POST body.
-  RewriteRule ^submit-form\.php$ /contact/submit [L]
+  # /submit-form.php is handled by a route, not a rule here: a redirect would
+  # drop the POST body, and an internal rewrite leaves REQUEST_URI unchanged so
+  # the router would never see the new path.
 
   RewriteRule ^admin/index\.php$ /admin [R=301,L]
   RewriteRule ^admin/(dashboard|login|logout|setup|content)\.php$ /admin/$1 [R=301,L]
@@ -84,6 +84,6 @@ Options -Indexes
 </IfModule>
 
 # Deny access to sensitive files wherever they appear
-<FilesMatch "^(\.env|composer\.(json|lock)|package\.json|package-lock\.json|yarn\.lock|README\.md|mail_debug\.log|contact_messages\.csv|.*\.sql)$">
+<FilesMatch "^(\.env|composer\.(json|lock)|package\.json|package-lock\.json|yarn\.lock|README\.md|mail_debug\.log|contact_messages\.csv|config\.php|.*\.sql)$">
   Require all denied
 </FilesMatch>

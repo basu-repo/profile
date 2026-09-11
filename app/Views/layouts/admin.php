@@ -92,7 +92,7 @@ function admin_render_footer(): void
     <?php if (admin_layout_uses_editor()): ?>
         <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <?php endif; ?>
-    <script src="/js/script.js"></script>
+    <script src="/js/script.js?v=20260911a"></script>
 </body>
 </html>
     <?php
