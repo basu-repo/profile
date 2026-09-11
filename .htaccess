@@ -1,7 +1,7 @@
 # Security hardening for Apache/cPanel
 # RewriteOptions inherit is intentionally EXCLUDED to prevent inheriting malicious rules from parent directories
 
-DirectoryIndex index.php index.html
+DirectoryIndex index.php
 
 # Disable directory listing
 Options -Indexes
@@ -35,22 +35,55 @@ Options -Indexes
   RewriteCond %{HTTP_HOST} !^127\.0\.0\.1$ [NC]
   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-  # Block access to storage directory
-  RewriteRule ^storage/ - [F,L]
-  RewriteRule ^includes/ - [F,L]
+  # ---------------------------------------------------------------------
+  # Application code and data are never served directly. Only index.php,
+  # the asset folders (css, js, images, certificates, uploads) and the
+  # favicon are reachable from the web.
+  # ---------------------------------------------------------------------
+  RewriteRule ^(app|bin|config|database|storage|legacy)(/|$) - [F,L]
 
-  # Research entries and the Now page
-  RewriteRule ^research/?$ /research.php [L]
-  RewriteRule ^research/([A-Za-z0-9_-]+)/?$ /research.php?slug=$1 [L,QSA]
-  RewriteRule ^now/?$ /now.php [L]
+  # ---------------------------------------------------------------------
+  # Addresses this site used before the MVC restructure. They redirect to
+  # the routes in app/routes.php so old links and search results survive.
+  # ---------------------------------------------------------------------
+  RewriteCond %{THE_REQUEST} \s/+index\.(php|html)[\s?] [NC]
+  RewriteRule ^ / [R=301,L]
 
-  # Prefer PHP-powered pages while preserving old .html links
-  RewriteRule ^index\.html$ /index.php [L]
-  RewriteRule ^about\.html$ /about.php [L]
-  RewriteRule ^contact\.html$ /contact.php [L]
+  RewriteRule ^about\.(php|html)$ /about [R=301,L]
+  RewriteRule ^contact\.(php|html)$ /contact [R=301,L]
+  RewriteRule ^now\.php$ /now [R=301,L]
+
+  RewriteCond %{QUERY_STRING} (?:^|&)slug=([A-Za-z0-9_-]+)
+  RewriteRule ^research\.php$ /research/%1? [R=301,L]
+  RewriteRule ^research\.php$ /research [R=301,L]
+
+  # Posted to by any page still serving the old markup, so it stays an
+  # internal rewrite -- a redirect would drop the POST body.
+  RewriteRule ^submit-form\.php$ /contact/submit [L]
+
+  RewriteRule ^admin/index\.php$ /admin [R=301,L]
+  RewriteRule ^admin/(dashboard|login|logout|setup|content)\.php$ /admin/$1 [R=301,L]
+  RewriteRule ^admin/messages\.php$ /admin/messages [R=301,L,QSA]
+  RewriteRule ^admin/entries\.php$ /admin/entries [R=301,L,QSA]
+
+  RewriteCond %{QUERY_STRING} (?:^|&)id=([0-9]+)
+  RewriteRule ^admin/message\.php$ /admin/messages/%1? [R=301,L]
+  RewriteRule ^admin/message\.php$ /admin/messages [R=301,L]
+
+  RewriteCond %{QUERY_STRING} (?:^|&)id=([0-9]+)
+  RewriteRule ^admin/entry\.php$ /admin/entries/%1/edit? [R=301,L]
+  RewriteRule ^admin/entry\.php$ /admin/entries/new [R=301,L]
+
+  # ---------------------------------------------------------------------
+  # Front controller: anything that is not a real file or directory is a
+  # route.
+  # ---------------------------------------------------------------------
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.php [L]
 </IfModule>
 
-# Deny access to sensitive files
-<FilesMatch "^(\.env|composer\.(json|lock)|package\.json|package-lock\.json|yarn\.lock|README\.md|mail_debug\.log|contact_messages\.csv|config\.php|database\.sql)$">
+# Deny access to sensitive files wherever they appear
+<FilesMatch "^(\.env|composer\.(json|lock)|package\.json|package-lock\.json|yarn\.lock|README\.md|mail_debug\.log|contact_messages\.csv|.*\.sql)$">
   Require all denied
 </FilesMatch>

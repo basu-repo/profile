@@ -255,7 +255,7 @@ function handleFormSubmit(e) {
     setSubmitButtonState(submitBtn, true);
     showFormLoader('Saving your message...');
 
-    fetch('submit-form.php', {
+    fetch('/contact/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, message, website, submittedAt, autoDeleteConsent, deleteAfterDays })

@@ -1,184 +1,138 @@
-# My Professional Website
+# basudeoshrestha.com.np
 
-A modern, responsive website template ready for cPanel deployment.
+A personal site with a small admin area, written in plain PHP and arranged as
+MVC. There is no framework and no Composer dependency: the application boots
+from `app/Core/bootstrap.php` and every request enters through `index.php`.
 
-## 📁 Project Structure
+## Project structure
 
 ```
-my_profile/
-├── index.html           # Home page
-├── about.html          # About page
-├── contact.html        # Contact page
-├── css/
-│   └── styles.css      # Main stylesheet
-├── js/
-│   └── script.js       # JavaScript functionality
-├── images/             # Folder for images (create as needed)
-└── README.md           # This file
+My_Profile/
+├── index.php               Front controller - the only PHP file the web serves
+├── router.php              Equivalent routing for `php -S` (development only)
+├── .htaccess               Apache rules: HTTPS, headers, front controller, legacy URLs
+│
+├── app/
+│   ├── routes.php          The URL map: "METHOD /path" => controller function
+│   ├── Core/
+│   │   ├── bootstrap.php   Loads everything below, in order
+│   │   ├── helpers.php     base_path(), asset_url(), h(), redirect(), excerpt()
+│   │   ├── database.php    Config loading and the shared PDO connection
+│   │   ├── html.php        Rich-text sanitising and date formatting
+│   │   ├── uploads.php     Storing images uploaded from the admin editor
+│   │   ├── view.php        view(), view_capture(), json_response()
+│   │   └── router.php      Route matching and dispatch
+│   ├── Models/             Data and rules - nothing here prints anything
+│   │   ├── SiteContent.php Editable site copy plus the admin form definition
+│   │   ├── Entry.php       Research entries
+│   │   ├── Message.php     Contact messages
+│   │   └── AdminUser.php   Admin accounts, session, flash, CSRF
+│   ├── Controllers/        Request in, model calls, one view out
+│   │   ├── HomeController.php, AboutController.php, ContactController.php,
+│   │   │   ContactFormController.php, NowController.php, ResearchController.php
+│   │   └── Admin/          AuthController, DashboardController,
+│   │                       MessageController, EntryController, ContentController
+│   └── Views/
+│       ├── layouts/        site.php (public chrome), admin.php (admin chrome)
+│       ├── partials/       contact-form.php, wysiwyg-toolbar.php
+│       ├── pages/          home, about, contact, now, research/, error
+│       └── admin/          login, setup, dashboard, messages/, entries/, content/
+│
+├── config/config.php       Database credentials and the anti-spam thresholds
+├── database/               schema.sql, entries.sql, update-retention.sql
+├── bin/                    Command-line scripts (message cleanup)
+├── storage/                Runtime logs - never served
+├── legacy/                 The original static HTML pages, kept for reference
+│
+├── css/ js/ images/ certificates/   Public assets
+└── uploads/                Images added through the admin editor (created on demand)
 ```
 
-## 🚀 Getting Started
+Only `index.php` and the asset folders are reachable from the web. `.htaccess`
+returns 403 for `app/`, `bin/`, `config/`, `database/`, `storage/` and
+`legacy/`, and `router.php` does the same during development.
 
-### Local Development
+## Routes
 
-1. Open any of the HTML files in your web browser to view the website
-2. Edit the HTML files to customize your content
-3. Modify `css/styles.css` for styling changes
-4. Update `js/script.js` for interactive features
+| URL | Handler |
+|-----|---------|
+| `/` | `home_index` |
+| `/about` | `about_index` |
+| `/contact` | `contact_index` |
+| `/contact/submit` | `contact_submit` (JSON, POST from the contact form) |
+| `/now` | `now_index` |
+| `/research` | `research_index` |
+| `/research/{slug}` | `research_show` |
+| `/admin` | redirects to setup, login or dashboard |
+| `/admin/login`, `/admin/logout`, `/admin/setup` | `AuthController` |
+| `/admin/dashboard` | `admin_dashboard` |
+| `/admin/messages`, `/admin/messages/{id}` | `MessageController` |
+| `/admin/entries`, `/admin/entries/new`, `/admin/entries/{id}/edit` | `EntryController` |
+| `/admin/content` | `admin_content_index` |
 
-### File Descriptions
+The addresses this site used before the restructure (`/index.php`,
+`/about.php`, `/contact.php`, `/now.php`, `/research.php?slug=…`,
+`/admin/dashboard.php` and the rest) are redirected to the routes above by
+`.htaccess`, so existing links and search results keep working.
+`/submit-form.php` is rewritten internally rather than redirected, because a
+redirect would drop the POST body.
 
-- **index.html** - Main landing page with hero section and features
-- **about.html** - About page to tell your story
-- **contact.html** - Contact page with contact form
-- **css/styles.css** - All website styling and responsive design
-- **js/script.js** - Form validation, smooth scrolling, and interactivity
+## Adding a page
 
-## 📦 Customization Guide
+1. Add a function to a controller in `app/Controllers/`.
+2. Add its template under `app/Views/pages/`.
+3. Register the URL in `app/routes.php`.
 
-### Update Site Information
+Controllers are plain functions rather than classes, so there is no
+autoloader; `app/Core/bootstrap.php` and `app/routes.php` list the files
+explicitly.
 
-1. **Website Title**: Edit the `<title>` tags in each HTML file
-2. **Navigation Links**: Modify the navigation menu items
-3. **Content**: Update text in each section
-4. **Colors**: Edit color values in `css/styles.css`
-5. **Contact Info**: Update email, phone, and location in `contact.html`
-
-### Add Your Logo
-
-Replace "MyWebsite" in the `.logo` div with your company/personal brand name or add an image:
-```html
-<div class="logo">
-    <img src="images/logo.png" alt="Logo">
-</div>
-```
-
-### Add Images
-
-1. Create an `images/` folder
-2. Place your images there
-3. Reference them in HTML:
-```html
-<img src="images/your-image.jpg" alt="Description">
-```
-
-## 💾 Deploy to cPanel
-
-### Method 1: Using cPanel File Manager (Recommended)
-
-1. **Connect to cPanel** at `yourdomain.com:2083`
-2. **Open File Manager**
-3. **Navigate** to `public_html` folder
-4. **Upload** all files and folders from this project:
-   - Upload `index.html`, `about.html`, `contact.html`
-   - Upload the entire `css/` folder
-   - Upload the entire `js/` folder
-   - Create and upload `images/` folder
-
-### Method 2: Using FTP
-
-1. **Download an FTP client** (FileZilla, WinSCP, etc.)
-2. **Connect** using FTP credentials from cPanel
-3. **Navigate** to `public_html` folder
-4. **Upload** all files and folders to `public_html`
-
-### Method 3: Using SSH (Advanced)
+## Local development
 
 ```bash
-# Connect via SSH
-ssh username@yourdomain.com
-
-# Navigate to public_html
-cd public_html
-
-# Upload files (from your local machine using SCP)
-scp -r /path/to/my_profile/* username@yourdomain.com:~/public_html/
+php -S localhost:8000 router.php
 ```
 
-## ✅ Post-Deployment Checklist
+Then open http://localhost:8000. The built-in server ignores `.htaccess`, which
+is what `router.php` is for — it applies the same rules.
 
-- [ ] Visit `yourdomain.com` to verify website loads
-- [ ] Check all navigation links work
-- [ ] Test contact form functionality
-- [ ] View on mobile devices (responsive design)
-- [ ] Check all images load correctly
-- [ ] Verify footer and links display properly
+## Database
 
-## 🔧 Important Notes for cPanel
+Import once, in this order:
 
-1. **Main Page**: The file `index.html` is automatically recognized as the home page
-2. **URL Structure**: Files are accessed as:
-   - `yourdomain.com/` → index.html
-   - `yourdomain.com/about.html` → about.html
-   - `yourdomain.com/contact.html` → contact.html
-3. **Directory Names**: Keep folder names lowercase without spaces
-4. **File Permissions**: Most hosting providers set correct permissions automatically
-
-## 📧 Contact Form Setup
-
-### Option 1: Basic Client-Side Validation (Current)
-The form currently validates on the client side and shows a success message.
-
-### Option 2: Server-Side Processing
-To actually send emails, you'll need a backend script. Create a PHP file (`submit-form.php`):
-
-```php
-<?php
-// submit-form.php
-$name = htmlspecialchars($_POST['name']);
-$email = htmlspecialchars($_POST['email']);
-$message = htmlspecialchars($_POST['message']);
-
-$to = 'your-email@example.com';
-$subject = 'New Contact Form Submission';
-$body = "Name: $name\nEmail: $email\n\nMessage:\n$message";
-
-if (mail($to, $subject, $body)) {
-    echo json_encode(['success' => true]);
-} else {
-    echo json_encode(['success' => false]);
-}
-?>
+```bash
+mysql -u USER -p DATABASE < database/schema.sql
+mysql -u USER -p DATABASE < database/entries.sql
+mysql -u USER -p DATABASE < database/update-retention.sql
 ```
 
-Then uncomment the JavaScript function in `js/script.js` to send data to PHP.
+Then put the credentials in `config/config.php`. That file is never served —
+it lives outside the document-root-visible tree and `.htaccess` blocks the
+whole `config/` directory.
 
-## 🎨 Customization Tips
+Visit `/admin/setup` once to create the first admin account. The setup page
+disables itself as soon as an account exists.
 
-- **Colors**: Edit the color codes in `css/styles.css` (look for hex colors like `#2c3e50`)
-- **Fonts**: Change `font-family` in the body CSS rule
-- **Layout**: Modify grid columns in `.feature-grid`
-- **Spacing**: Adjust padding and margin values
+## Scheduled cleanup
 
-## 📱 Responsive Breakpoints
+Visitors may ask for their message to be deleted after 7–90 days. A cron job
+carries that out:
 
-The website is optimized for:
-- Desktop (1200px and above)
-- Tablet (768px - 1199px)
-- Mobile (480px - 767px)
-- Small Mobile (below 480px)
+```
+0 3 * * * php /home/USER/public_html/bin/cleanup-expired-messages.php
+```
 
-## 🆘 Troubleshooting
+## Deploying to cPanel
 
-| Issue | Solution |
-|-------|----------|
-| Page not loading | Check file permissions (644 for files, 755 for folders) |
-| Images not showing | Verify path is correct (use relative paths like `images/pic.jpg`) |
-| Styles not applied | Clear browser cache (Ctrl+Shift+Del or Cmd+Shift+Del) |
-| Links not working | Ensure HTML files are in `public_html` root |
-| Form not working | Check if your hosting supports PHP, or use client-side validation |
+Upload the whole project into `public_html`. The document root stays at the
+project root, so nothing about the hosting setup needs to change: `.htaccess`
+is what keeps the code directories private.
 
-## 📚 Resources
+After uploading:
 
-- [cPanel Documentation](https://documentation.cpanel.net/)
-- [HTML Reference](https://developer.mozilla.org/en-US/docs/Web/HTML)
-- [CSS Reference](https://developer.mozilla.org/en-US/docs/Web/CSS)
-- [JavaScript Reference](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-
-## 📄 License
-
-Free to use and modify for your own website.
-
----
-
-**Happy building! 🎉** If you have questions, check the troubleshooting section or consult your hosting provider.
+- [ ] Confirm `mod_rewrite` is enabled (clean URLs depend on it)
+- [ ] Check `/` and `/research` load, and that an old link like `/about.php`
+      redirects to `/about`
+- [ ] Sign in at `/admin/login` and save one content section
+- [ ] Send a test message through the contact form
+- [ ] Make sure `uploads/` is writable by PHP (755)
