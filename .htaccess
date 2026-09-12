@@ -1,6 +1,15 @@
 # Security hardening for Apache/cPanel
 # RewriteOptions inherit is intentionally EXCLUDED to prevent inheriting malicious rules from parent directories
 
+# Run this site on PHP 8.1. The code does not parse on the host's default PHP
+# 7.2. This file replaces the server's copy on every upload, so the handler has
+# to live here or the domain silently drops back to 7.2. The handler name is
+# specific to the host: if cPanel's MultiPHP Manager or "Select PHP Version"
+# writes a different line, use that one instead.
+<IfModule mime_module>
+  AddHandler application/x-httpd-php81 .php
+</IfModule>
+
 DirectoryIndex index.php
 
 # Disable directory listing

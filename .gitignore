@@ -3,6 +3,9 @@
 config/config.php
 /config.php
 
+# Database backups hold the admin password hash and visitor messages
+database/backups/
+
 # Runtime data written by the application
 storage/*.log
 uploads/
