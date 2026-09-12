@@ -304,7 +304,7 @@ body {
 
 .feature-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
     gap: 2.25rem;
 }
 
@@ -389,7 +389,7 @@ body {
 
 .skills-section {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
     gap: 2rem;
     margin-top: 2rem;
 }
@@ -1379,7 +1379,7 @@ body {
 
 .admin-stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
     gap: 1.5rem;
     margin-bottom: 2rem;
 }
@@ -1418,6 +1418,7 @@ body {
 }
 
 .admin-mini-item {
+    overflow-wrap: anywhere;
     display: grid;
     gap: 0.2rem;
     padding: 0.9rem 1rem;
@@ -1433,6 +1434,10 @@ body {
 
 .admin-toolbar {
     margin-bottom: 1.25rem;
+}
+
+.admin-filter-links a {
+    color: #2c3e50;
 }
 
 .admin-filter-links a.active {
@@ -1598,7 +1603,7 @@ footer a:hover {
 
     .admin-panel-grid,
     .admin-detail-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 
     .page-content h1,
@@ -1638,6 +1643,12 @@ footer a:hover {
 @media (max-width: 480px) {
     .navbar {
         display: none;
+    }
+
+    /* The public pages drop the navbar on phones, but the admin area has no
+       other way to move between its screens. */
+    .navbar.admin-navbar {
+        display: block;
     }
 
     .hero-content {
@@ -2068,6 +2079,14 @@ footer a:hover {
     }
 }
 
+/* On a phone the section index would fill the first screen with links before
+   any content, so it is dropped and the page is simply scrolled. */
+@media (max-width: 768px) {
+    .rail-nav {
+        display: none;
+    }
+}
+
 @media (max-width: 480px) {
     .profile-section {
         padding: 40px 0;
@@ -2109,13 +2128,26 @@ footer a:hover {
    minimum before they will form a third column — otherwise three cards sit as
    two-plus-one and leave a wide hole on the right. */
 .profile-section .feature-grid {
-    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(270px, 100%), 1fr));
     gap: 1.6rem;
 }
 
 /* A wider minimum holds the four skill cards to two columns, which reads as a
-   balanced 2x2 rather than a row of three and a lone card underneath. */
+   balanced 2x2 rather than a row of three and a lone card underneath. The
+   min() lets a column shrink below 380px on a phone, where a fixed minimum
+   was wider than the screen and pushed the page into sideways scrolling. */
 .profile-section .skills-section {
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr));
     gap: 1.6rem;
+}
+
+/* Justified text opens wide gaps between words once a line only holds a few of
+   them, so narrow screens fall back to ordinary left alignment. */
+@media (max-width: 768px) {
+    .about-content p,
+    .about-paragraph,
+    .experience-details li,
+    .experience-item p {
+        text-align: left;
+    }
 }

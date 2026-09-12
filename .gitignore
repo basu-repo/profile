@@ -27,3 +27,6 @@ Thumbs.db
 *.DOCX
 *.odt
 *.rtf
+
+# Upload packages carry the server's database password
+*.zip
