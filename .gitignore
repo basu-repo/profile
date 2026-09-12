@@ -13,3 +13,14 @@ uploads/
 .DS_Store
 Thumbs.db
 *.swp
+
+# Documents such as the CV and paper PDFs stay out of the repository. They can
+# hold personal details, and nothing in the site reads them from here.
+*.pdf
+*.PDF
+*.doc
+*.DOC
+*.docx
+*.DOCX
+*.odt
+*.rtf
