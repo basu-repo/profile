@@ -48,6 +48,23 @@ function contact_text_length(string $value): int
     return function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
 }
 
+/**
+ * "host" or "host:port" for a URL, in the same shape as the Host header. The
+ * port matters: comparing the bare host against "localhost:8000" rejected every
+ * submission on a server that runs on a non-default port.
+ */
+function contact_url_authority(string $url): string
+{
+    $host = parse_url($url, PHP_URL_HOST);
+    if (!is_string($host) || $host === '') {
+        return '';
+    }
+
+    $port = parse_url($url, PHP_URL_PORT);
+
+    return is_int($port) ? $host . ':' . $port : $host;
+}
+
 function contact_is_same_origin_request(): bool
 {
     $host = $_SERVER['HTTP_HOST'] ?? '';
@@ -55,15 +72,15 @@ function contact_is_same_origin_request(): bool
     $referer = $_SERVER['HTTP_REFERER'] ?? '';
 
     if ($origin !== '') {
-        $originHost = parse_url($origin, PHP_URL_HOST) ?? '';
-        if ($originHost !== '' && strcasecmp($originHost, $host) !== 0) {
+        $originAuthority = contact_url_authority($origin);
+        if ($originAuthority !== '' && strcasecmp($originAuthority, $host) !== 0) {
             return false;
         }
     }
 
     if ($referer !== '') {
-        $refererHost = parse_url($referer, PHP_URL_HOST) ?? '';
-        if ($refererHost !== '' && strcasecmp($refererHost, $host) !== 0) {
+        $refererAuthority = contact_url_authority($referer);
+        if ($refererAuthority !== '' && strcasecmp($refererAuthority, $host) !== 0) {
             return false;
         }
     }

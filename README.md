@@ -24,22 +24,20 @@ My_Profile/
 │   │   └── router.php      Route matching and dispatch
 │   ├── Models/             Data and rules - nothing here prints anything
 │   │   ├── SiteContent.php Editable site copy plus the admin form definition
-│   │   ├── Entry.php       Research entries
 │   │   ├── Message.php     Contact messages
 │   │   └── AdminUser.php   Admin accounts, session, flash, CSRF
 │   ├── Controllers/        Request in, model calls, one view out
-│   │   ├── HomeController.php, AboutController.php, ContactController.php,
-│   │   │   ContactFormController.php, NowController.php, ResearchController.php
+│   │   ├── HomeController.php, ContactFormController.php
 │   │   └── Admin/          AuthController, DashboardController,
-│   │                       MessageController, EntryController, ContentController
+│   │                       MessageController, ContentController
 │   └── Views/
 │       ├── layouts/        site.php (public chrome), admin.php (admin chrome)
 │       ├── partials/       contact-form.php, wysiwyg-toolbar.php
-│       ├── pages/          home, about, contact, now, research/, error
-│       └── admin/          login, setup, dashboard, messages/, entries/, content/
+│       ├── pages/          home, error
+│       └── admin/          login, setup, dashboard, messages/, content/
 │
 ├── config/config.php       Database credentials and the anti-spam thresholds
-├── database/               schema.sql, entries.sql, update-retention.sql
+├── database/               schema.sql, update-retention.sql
 ├── bin/                    Command-line scripts (message cleanup)
 ├── storage/                Runtime logs - never served
 ├── legacy/                 The original static HTML pages, kept for reference
@@ -57,25 +55,22 @@ returns 403 for `app/`, `bin/`, `config/`, `database/`, `storage/` and
 | URL | Handler |
 |-----|---------|
 | `/` | `home_index` |
-| `/about` | `about_index` |
-| `/contact` | `contact_index` |
 | `/contact/submit` | `contact_submit` (JSON, POST from the contact form) |
-| `/now` | `now_index` |
-| `/research` | `research_index` |
-| `/research/{slug}` | `research_show` |
 | `/admin` | redirects to setup, login or dashboard |
 | `/admin/login`, `/admin/logout`, `/admin/setup` | `AuthController` |
 | `/admin/dashboard` | `admin_dashboard` |
 | `/admin/messages`, `/admin/messages/{id}` | `MessageController` |
-| `/admin/entries`, `/admin/entries/new`, `/admin/entries/{id}/edit` | `EntryController` |
 | `/admin/content` | `admin_content_index` |
 
 The addresses this site used before the restructure (`/index.php`,
-`/about.php`, `/contact.php`, `/now.php`, `/research.php?slug=…`,
-`/admin/dashboard.php` and the rest) are redirected to the routes above by
-`.htaccess`, so existing links and search results keep working.
-`/submit-form.php` is rewritten internally rather than redirected, because a
-redirect would drop the POST body.
+`/admin/dashboard.php`, `/admin/login.php` and the other admin screens) are
+redirected to the routes above by `.htaccess`, so existing links and search
+results keep working. `/submit-form.php` is routed to the contact endpoint
+rather than redirected, because a redirect would drop the POST body. The site
+no longer has separate About, Research, Now or Contact pages; their old
+addresses return 404. The overview, the publications and the contact form are
+sections of the home page. Publications are listed in the
+Research & Publications section of the home page.
 
 ## Adding a page
 
@@ -98,17 +93,20 @@ is what `router.php` is for — it applies the same rules.
 
 ## Database
 
-For a fresh install, import these two:
+For a fresh install, import the schema:
 
 ```bash
 mysql -u USER -p < database/schema.sql          # creates the database and three tables
-mysql -u USER -p my_profile < database/entries.sql
 ```
 
 `database/update-retention.sql` is **not** part of a fresh install. It is a
 migration that adds the auto-delete columns to a `contact_messages` table
 created before that feature existed; `schema.sql` already includes them, so
 running it on a new database fails with "Duplicate column name".
+
+A database set up before the Research pages were removed may still hold an
+`entries` table. The site no longer reads it, so it can be exported and dropped
+whenever convenient.
 
 Then put the credentials in `config/config.php`. That file is never served —
 it lives outside the document-root-visible tree and `.htaccess` blocks the
@@ -135,8 +133,8 @@ is what keeps the code directories private.
 After uploading:
 
 - [ ] Confirm `mod_rewrite` is enabled (clean URLs depend on it)
-- [ ] Check `/` and `/research` load, and that an old link like `/about.php`
-      redirects to `/about`
+- [ ] Check `/` loads, and that an old link like `/admin/login.php`
+      redirects to `/admin/login`
 - [ ] Sign in at `/admin/login` and save one content section
 - [ ] Send a test message through the contact form
 - [ ] Make sure `uploads/` is writable by PHP (755)

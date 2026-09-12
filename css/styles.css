@@ -224,26 +224,68 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-.contact-submit-btn {
-    background-color: #2563eb;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 700;
-    min-width: 88px;
-    min-height: 52px;
-    padding: 12px 24px;
-    text-align: center;
-    margin-left: auto;
+/* No button box — just the send icon, stretched to the height of the options
+   panel beside it so the two line up as a single row. */
+.form-send-row {
     display: flex;
+    align-items: stretch;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+}
+
+.form-send-row .form-retention-group {
+    flex: 1 1 auto;
+    margin-bottom: 0;
+}
+
+.contact-submit-btn {
+    flex: 0 0 auto;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    aspect-ratio: 1;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    color: #667eea;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .contact-submit-btn:hover {
-    background-color: #1d4ed8;
+    color: #764ba2;
+    transform: translateX(3px);
 }
 
+/* The submit handler disables the button while a message is in flight. */
+.contact-submit-btn:disabled {
+    color: #a9b4c0;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.contact-submit-btn:focus-visible {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Sized so the glyph stands as tall as the options panel beside it. */
 .contact-submit-btn i {
-    font-size: 1.15rem;
+    font-size: 2.9rem;
+}
+
+/* Too narrow to sit side by side: the icon drops under the panel, kept right. */
+@media (max-width: 560px) {
+    .form-send-row {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .form-send-row .form-retention-group {
+        flex: 1 1 100%;
+    }
 }
 
 /* Features Section */
@@ -305,32 +347,10 @@ body {
     text-align: center;
 }
 
-.about-section h2,
 .contact-section h2 {
     color: #2c3e50;
     margin-top: 2rem;
     margin-bottom: 1rem;
-}
-
-.about-section p,
-.contact-info p {
-    margin-bottom: 1rem;
-    line-height: 1.8;
-}
-
-.skills-list {
-    list-style-position: inside;
-    margin-left: 1rem;
-}
-
-.skills-list li {
-    margin: 0.5rem 0;
-}
-
-.skills-list li strong {
-    display: block;
-    margin-bottom: 0.35rem;
-    color: #2c3e50;
 }
 
 /* Single Page Sections */
@@ -411,15 +431,14 @@ body {
 
 .contact-quote {
     text-align: center;
-    max-width: 650px;
-    margin: 0 auto 3rem auto;
+    margin: 0 auto 1.6rem auto;
 }
 
 .contact-quote p {
-    font-size: 1.05rem;
+    font-size: 1rem;
     color: #6c757d;
-    line-height: 1.8;
-    margin-bottom: 0.8rem;
+    line-height: 1.6;
+    margin-bottom: 0;
 }
 
 .contact-quote-text {
@@ -435,39 +454,6 @@ body {
 
 .contact-quote-text p:last-child {
     margin-bottom: 0;
-}
-
-.contact-form-heading {
-    text-align: center;
-    color: #2c3e50;
-    margin: 0 0 1rem 0;
-}
-
-.contact-signature {
-    font-family: 'Dancing Script', cursive;
-    font-size: 1.6rem;
-    color: #764ba2;
-    display: inline-block;
-    margin-bottom: 0.4rem;
-}
-
-.contact-email-inline {
-    margin: 0.9rem 0 0 0;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #1e3a8a;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-}
-
-.contact-email-text {
-    display: inline-block;
-    color: #1e3a8a;
-    text-decoration: none;
-    white-space: nowrap;
-    overflow: hidden;
-    width: 0;
-    border-right: 2px solid #2563eb;
-    animation: typingEmail 3.2s steps(27, end) forwards, blinkCaret 0.85s step-end infinite;
 }
 
 @keyframes typingEmail {
@@ -673,29 +659,8 @@ body {
     color: #2563eb;
 }
 
-.rich-text-compact {
-    margin-top: 0.15rem;
-}
-
 .certifications-grid,
-.languages-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
-    margin-bottom: 2.5rem;
-}
-
-.cert-card,
-.language-card {
-    background-color: white;
-    padding: 1.75rem;
-    border-radius: 8px;
-    border-top: 3px solid #3498db;
-    text-align: center;
-}
-
-.cert-card,
-.language-card {
+.cert-card {
     background-color: white;
     padding: 1.5rem;
     border-radius: 8px;
@@ -703,14 +668,36 @@ body {
     text-align: center;
 }
 
-.language-card h4 {
-    color: #2c3e50;
-    margin: 0 0 0.5rem 0;
+/* Languages: a wrapping row of compact entries rather than full-width cards,
+   so the section stays tight whether there are two languages or six. */
+.language-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    list-style: none;
+    margin: 1.5rem 0 2.5rem 0;
+    padding: 0;
 }
 
-.language-card p {
+.language-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    padding: 0.75rem 1.2rem;
+    background-color: white;
+    border-radius: 8px;
+    border: 1px solid #e4e9ed;
+    border-left: 4px solid #3498db;
+}
+
+.language-name {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.language-level {
     color: #7f8c8d;
-    margin: 0;
+    font-size: 0.92rem;
 }
 
 /* Certificate Accordion */
@@ -808,12 +795,10 @@ body {
     gap: 1rem;
 }
 
+/* The whole row is the link and the title carries it — there is no separate
+   "Open" affordance to click. */
 .research-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 1rem;
+    display: block;
     padding: 1rem 1.2rem;
     background-color: white;
     border-radius: 8px;
@@ -828,19 +813,19 @@ body {
     border-left-color: #c0392b;
 }
 
+/* Blue marks it as the link, the same blue the other links on the page use;
+   no underline, and no red — the red is the card's accent, not the link's. */
 .research-row-title {
-    color: #2c3e50;
+    color: #3498db;
     line-height: 1.6;
     font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease;
 }
 
-.research-row-action {
-    flex-shrink: 0;
-    color: #3498db;
-    font-weight: 700;
-    font-size: 0.92rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+.research-row:hover .research-row-title,
+.research-row:focus-visible .research-row-title {
+    color: #2980b9;
 }
 
 /* Contact Section */
@@ -859,29 +844,12 @@ body {
 }
 
 .contact-section-full .contact-form {
-    max-width: 760px;
+    max-width: 860px;
     margin: 0 auto;
     background-color: white;
-    padding: 2rem;
+    padding: 1.5rem 1.75rem;
     border-radius: 8px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
-
-.contact-info {
-    background-color: #ecf0f1;
-    padding: 2rem;
-    border-radius: 8px;
-}
-
-.contact-info a {
-    color: #3498db;
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.contact-info a:hover {
-    color: #2980b9;
-    text-decoration: underline;
 }
 
 .contact-form {
@@ -891,7 +859,7 @@ body {
 }
 
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.05rem;
 }
 
 .form-group label {
@@ -912,7 +880,7 @@ body {
 }
 
 .form-group textarea {
-    min-height: 140px;
+    min-height: 104px;
     resize: vertical;
     line-height: 1.5;
 }
@@ -921,21 +889,44 @@ body {
     background-color: #f4f7fb;
     border: 1px solid #d7e3f0;
     border-radius: 8px;
-    padding: 1rem;
+    padding: 0.6rem 0.85rem;
 }
 
 .retention-inline-row {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.85rem;
-    margin-top: 0.4rem;
+    gap: 0.75rem;
+    margin-top: 0;
+}
+
+/* Sits on its own line, with the checkbox and its text on the line below. */
+.retention-label {
+    display: block;
+    white-space: nowrap;
+    margin: 0 0 0.4rem 0;
+}
+
+/* The row is a footnote to the form, not a field of its own: smaller and
+   lighter than the labels above it. */
+.retention-inline-row,
+.retention-inline-row .checkbox-row,
+.retention-picker span {
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: #4a5a6a;
+}
+
+/* Lives under the panel now that the panel is a single row. */
+.retention-note {
+    display: block;
+    margin: -0.5rem 0 0 0;
 }
 
 .checkbox-row {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
+    gap: 0.5rem;
     margin-bottom: 0;
     cursor: pointer;
 }
@@ -957,12 +948,12 @@ body {
 }
 
 .retention-picker select {
-    min-width: 180px;
-    padding: 10px;
+    min-width: 140px;
+    padding: 5px 8px;
     border: 1px solid #bdc3c7;
     border-radius: 5px;
     font-family: inherit;
-    font-size: 1rem;
+    font-size: 0.82rem;
     background-color: #fff;
 }
 
@@ -1627,9 +1618,12 @@ footer a:hover {
         grid-template-columns: 1fr;
     }
 
-    .certifications-grid,
-    .languages-grid {
+    .certifications-grid {
         grid-template-columns: 1fr;
+    }
+
+    .language-list {
+        flex-direction: column;
     }
 
     .experience-item {
@@ -1694,9 +1688,12 @@ footer a:hover {
         padding: 1.2rem;
     }
 
-    .certifications-grid,
-    .languages-grid {
+    .certifications-grid {
         grid-template-columns: 1fr;
+    }
+
+    .language-list {
+        flex-direction: column;
     }
 
     .admin-action-list,
@@ -1706,100 +1703,419 @@ footer a:hover {
     }
 }
 
-/* ---- Research entries (/research, /research/<slug>, /now) ----------------
-   Follows the existing card idiom: white panel, 8px radius, coloured left
-   border, same hover lift as .research-row. */
-
-.entry-card {
-    display: block;
-    background-color: white;
-    padding: 1.6rem 1.8rem;
-    margin-bottom: 1.5rem;
-    border-radius: 8px;
-    border-left: 4px solid #e74c3c;
-    text-decoration: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.entry-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    border-left-color: #c0392b;
-}
-
-.entry-card-meta,
-.entry-detail-meta {
-    display: block;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #7f8c8d;
-    margin-bottom: 0.45rem;
-}
-
-.entry-card-title {
-    display: block;
-    font-size: 1.15rem;
-    font-weight: 600;
-    color: #2c3e50;
-    line-height: 1.5;
-    margin-bottom: 0.5rem;
-    transition: color 0.2s ease;
-}
-
-.entry-card:hover .entry-card-title { color: #3498db; }
-
-.entry-card-abstract {
-    margin: 0;
-    color: #555;
-    line-height: 1.6;
-}
-
-.entry-group-heading {
-    margin: 2.5rem 0 1.2rem;
-    color: #2c3e50;
-}
-
-.entry-group:first-of-type .entry-group-heading { margin-top: 1rem; }
-
-.entry-detail-abstract {
-    background-color: #f8fafc;
-    border-left: 4px solid #3498db;
-    padding: 1.2rem 1.4rem;
-    border-radius: 0 8px 8px 0;
-    margin: 1.5rem 0 2rem;
-    color: #555;
-    line-height: 1.7;
-}
-
-.entry-official-link {
-    display: inline-block;
-    margin-top: 0.9rem;
-    color: #3498db;
-    font-weight: 600;
-    text-decoration: none;
-}
-
-.entry-official-link:hover { color: #2980b9; text-decoration: underline; }
-
-.entry-back-link {
-    display: inline-block;
-    margin-top: 2.5rem;
-    color: #7f8c8d;
-    text-decoration: none;
-}
-
-.entry-back-link:hover { color: #2c3e50; }
-
-.now-updated-line {
-    margin-top: 2rem;
-    color: #7f8c8d;
-    font-size: 0.9rem;
-}
-
+/* The explanatory line on the error page. */
 .entry-empty-note { color: #7f8c8d; font-style: italic; }
 
+/* ==========================================================================
+   Profile layout (home page)
+
+   A fixed identity rail on the left — photo, name, location, social links and
+   the index of sections — beside a column of content that scrolls on its own.
+   The rail replaces the top navbar on this page only; every other page still
+   uses .navbar from the shared layout.
+   ========================================================================== */
+
+.profile-page .profile-shell {
+    display: flex;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+.profile-rail {
+    /* 380px at the 1920px design width, easing back to 320px on narrower
+       screens so the content column is not squeezed. */
+    flex: 0 0 clamp(320px, 20vw, 380px);
+    width: clamp(320px, 20vw, 380px);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: linear-gradient(160deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    box-shadow: 2px 0 14px rgba(0, 0, 0, 0.12);
+}
+
+.profile-rail-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+    min-height: 100%;
+    padding: 2.5rem 2rem;
+}
+
+.rail-identity {
+    text-align: center;
+}
+
+.rail-photo {
+    width: 158px;
+    height: 158px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.rail-photo:hover {
+    transform: scale(1.04);
+}
+
+.rail-name {
+    font-size: 1.55rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: #ffffff;
+    margin: 1.15rem 0 0 0;
+}
+
+.rail-location {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    font-size: 0.98rem;
+    font-weight: 600;
+    color: #f2f4ff;
+    margin-top: 0.9rem;
+}
+
+.rail-location i {
+    color: #ffd166;
+}
+
+/* A floating bar of social icons pinned to the right edge of the window, clear
+   of the content column. Icons only — the title/aria-label carries the name for
+   anyone who needs it. */
+.social-dock {
+    position: fixed;
+    top: 50%;
+    right: 18px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.55rem 0.45rem;
+    background-color: #ffffff;
+    border: 1px solid #e6eaee;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(44, 62, 80, 0.13);
+    z-index: 900;
+}
+
+.social-dock a,
+.social-dock button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: none;
+    font-family: inherit;
+    font-size: 1rem;
+    color: #2c3e50;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.social-dock a:hover,
+.social-dock button:hover {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+/* Brief confirmation after the Discord handle is copied. */
+.social-dock button.copied {
+    background: #2e9e6b;
+    color: #ffffff;
+}
+
+/* Wider than this the centred column already leaves a gutter the dock sits in;
+   below it, reserve a lane so body text never runs under the icons. */
+@media (max-width: 1600px) {
+    .profile-main {
+        padding-right: 62px;
+    }
+}
+
+/* Once the rail stacks there is no gutter to float in, and a fixed bar would
+   sit on top of the content. The icons drop back into the rail instead, under
+   the location, styled for the purple ground. */
+@media (max-width: 1024px) {
+    .profile-main {
+        padding-right: 0;
+    }
+
+    .social-dock {
+        position: static;
+        transform: none;
+        flex-direction: row;
+        justify-content: center;
+        margin-top: 1.2rem;
+        padding: 0;
+        background: none;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .social-dock a,
+    .social-dock button {
+        border-color: rgba(255, 255, 255, 0.28);
+        color: #f5f7ff;
+    }
+
+    .social-dock a:hover,
+    .social-dock button:hover {
+        background: rgba(255, 255, 255, 0.18);
+        color: #ffffff;
+        transform: none;
+    }
+}
+
+.rail-nav-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.62);
+    margin-bottom: 0.6rem;
+}
+
+.rail-nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Nothing pins the bottom of the rail now that the footer moved out, so the
+   index keeps its own spacing and the gradient simply runs on beneath it. */
+.rail-nav {
+    margin-bottom: auto;
+}
+
+.rail-link {
+    display: block;
+    padding: 0.5rem 0.8rem;
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+    font-size: 1rem;
+    color: #e9ecff;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.rail-link:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+.rail-link.active {
+    background-color: rgba(255, 255, 255, 0.18);
+    border-left-color: #ffd166;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* The scrolling column. min-width:0 stops long unbroken text from widening
+   the flex item and squeezing the rail. */
+.profile-main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* The tagline opens the content column rather than sitting under the photo in
+   the rail, so it gets the width to read as a line of prose. It borrows the
+   section container and hairline so it lines up with everything below it, and
+   sticks to the top of the window as the column scrolls under it — hence the
+   opaque background and the shallow padding, so it costs little height. */
+.profile-intro {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding: 20px 0 18px 0;
+    /* White against the page's off-white ground, with a shadow and the accent
+       rule beneath, so the line carries as the page's masthead instead of
+       reading as a caption — without costing extra height. */
+    background-color: #ffffff;
+    border-bottom: 3px solid transparent;
+    border-image: linear-gradient(90deg, #667eea, #764ba2) 1;
+    box-shadow: 0 4px 14px rgba(44, 62, 80, 0.09);
+}
+
+.profile-intro-tagline {
+    font-size: 1.32rem;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.005em;
+    color: #2c3e50;
+}
+
+.profile-intro-tagline p {
+    margin: 0 0 0.5rem 0;
+}
+
+.profile-intro-tagline p:last-child {
+    margin-bottom: 0;
+}
+
+/* auto margins so the slack beside the rail is split evenly either side of the
+   text instead of all collecting on the right of a wide screen. */
+.profile-main .container {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 3.5vw, 48px);
+}
+
+/* One background for the whole column, with a hairline between sections, so
+   the eye follows the content rather than a run of alternating bands. */
+.profile-section {
+    background-color: #f9f9f9;
+    padding: 56px 0;
+    /* Clears the sticky tagline header so a jumped-to heading is not hidden. */
+    scroll-margin-top: 74px;
+}
+
+.profile-section + .profile-section {
+    border-top: 1px solid #e6eaee;
+}
+
+.profile-section h1,
+.features.profile-section h2 {
+    font-size: 2rem;
+    text-align: left;
+    color: #2c3e50;
+    margin-bottom: 1.9rem;
+}
+
+/* The footer lives at the foot of the rail, not under the content. margin-top:
+   Sits at the foot of the content column, set to the right, so it closes the
+   page where the reading ends rather than hanging under the rail index. The
+   overrides undo the dark full-width bar that footer gets elsewhere. */
+.profile-footer {
+    padding: 26px 0 40px 0;
+    border-top: 1px solid #e6eaee;
+    background: none;
+    color: #6b7a89;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+.profile-footer .container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.3rem 1.4rem;
+}
+
+.profile-footer p {
+    margin: 0;
+}
+
+.profile-footer a {
+    color: #667eea;
+    text-decoration: underline;
+}
+
+.profile-footer a:hover {
+    color: #764ba2;
+}
+
+@media (max-width: 1024px) {
+    .profile-page .profile-shell {
+        flex-direction: column;
+    }
+
+    /* The rail stops being a rail: it becomes a normal block at the top of the
+       page and the index turns into a wrapping row of links. */
+    .profile-rail {
+        position: static;
+        flex: none;
+        width: 100%;
+        height: auto;
+        overflow: visible;
+    }
+
+    .profile-rail-inner {
+        min-height: 0;
+        padding: 2rem 1.25rem;
+    }
+
+    .rail-nav ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
+
+    .rail-link {
+        border-left: none;
+        border-bottom: 3px solid transparent;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .rail-link.active {
+        border-left-color: transparent;
+        border-bottom-color: #ffd166;
+    }
+
+    .profile-main .container {
+        max-width: 100%;
+    }
+}
+
 @media (max-width: 480px) {
-    .entry-card { padding: 1.3rem 1.4rem; }
-    .entry-card-title { font-size: 1.05rem; }
+    .profile-section {
+        padding: 40px 0;
+    }
+
+    .profile-intro {
+        padding: 14px 0 12px 0;
+    }
+
+    .profile-intro-tagline {
+        font-size: 1.05rem;
+    }
+
+    .profile-section h1,
+    .features.profile-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .rail-photo {
+        width: 130px;
+        height: 130px;
+    }
+}
+
+/* The column is a single #f9f9f9 ground, so every card on it is white with a
+   coloured left edge — the pattern the education section already used. Without
+   this, .experience-item (#f9f9f9) and the grey cards would sink into it. */
+.profile-section .feature-card,
+.profile-section .skill-category,
+.profile-section .experience-item {
+    background-color: #ffffff;
+}
+
+.profile-section .feature-card {
+    border-left: 4px solid #3498db;
+}
+
+/* The column is narrower than a full page, so the card grids need a smaller
+   minimum before they will form a third column — otherwise three cards sit as
+   two-plus-one and leave a wide hole on the right. */
+.profile-section .feature-grid {
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+    gap: 1.6rem;
+}
+
+/* A wider minimum holds the four skill cards to two columns, which reads as a
+   balanced 2x2 rather than a row of three and a lone card underneath. */
+.profile-section .skills-section {
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 1.6rem;
 }

@@ -13,9 +13,6 @@ function layout_start(string $title, string $active = '', string $description = 
 
     $nav = [
         'home' => ['label' => 'Home', 'href' => '/'],
-        'research' => ['label' => 'Research', 'href' => '/research'],
-        'now' => ['label' => 'Now', 'href' => '/now'],
-        'contact' => ['label' => 'Contact', 'href' => '/contact'],
     ];
     ?>
 <!DOCTYPE html>
@@ -72,18 +69,4 @@ function layout_end(): void
 </body>
 </html>
     <?php
-}
-
-/**
- * Labels the outbound link with its host, so an entry says "View on
- * ieeexplore.ieee.org" rather than a bare URL.
- */
-function layout_official_label(string $url): string
-{
-    $host = parse_url($url, PHP_URL_HOST);
-    if (!is_string($host) || $host === '') {
-        return 'View the official record';
-    }
-
-    return 'View on ' . preg_replace('/^www\./i', '', $host);
 }

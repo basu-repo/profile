@@ -551,13 +551,90 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Confirm destructive admin actions. Declared via data-confirm rather than an
-// inline onsubmit handler, which the site's CSP (script-src 'self') blocks.
-document.addEventListener('submit', function(event) {
-    const form = event.target.closest('[data-confirm]');
-    if (!form) return;
+// Section index in the profile rail (home page): smooth scrolling, plus an
+// active marker that follows whichever section is currently in view.
+document.addEventListener('DOMContentLoaded', function () {
+    const railLinks = Array.prototype.slice.call(document.querySelectorAll('.rail-link'));
+    if (!railLinks.length) return;
 
-    if (!window.confirm(form.getAttribute('data-confirm'))) {
-        event.preventDefault();
+    const sections = railLinks
+        .map(function (link) { return document.querySelector(link.getAttribute('href')); })
+        .filter(Boolean);
+
+    function setActive(link) {
+        railLinks.forEach(function (other) {
+            other.classList.toggle('active', other === link);
+        });
     }
+
+    function linkFor(section) {
+        return railLinks.filter(function (link) {
+            return link.getAttribute('href') === '#' + section.id;
+        })[0];
+    }
+
+    // The section whose top has passed the upper third of the viewport; that
+    // reads as "the one you are looking at" better than the topmost visible.
+    function syncActive() {
+        const marker = window.innerHeight * 0.3;
+        let current = null;
+
+        sections.forEach(function (section) {
+            if (section.getBoundingClientRect().top <= marker) current = section;
+        });
+
+        if (!current) current = sections[0];
+        const link = current && linkFor(current);
+        if (link) setActive(link);
+    }
+
+    railLinks.forEach(function (link) {
+        link.addEventListener('click', function (event) {
+            const target = document.querySelector(this.getAttribute('href'));
+            if (!target) return;
+
+            event.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            setActive(this);
+        });
+    });
+
+    window.addEventListener('scroll', syncActive, { passive: true });
+    syncActive();
+});
+
+// Discord exposes no public profile URL for a username, so the dock entry
+// copies the handle to the clipboard instead of navigating anywhere.
+document.addEventListener('DOMContentLoaded', function () {
+    const discordBtn = document.getElementById('discordCopy');
+    if (!discordBtn) return;
+
+    const handle = discordBtn.dataset.handle || '';
+    const icon = discordBtn.querySelector('i');
+    let resetTimer = null;
+
+    function flash(copied) {
+        discordBtn.classList.toggle('copied', copied);
+        if (icon) icon.className = copied ? 'fas fa-check' : 'fab fa-discord';
+        discordBtn.setAttribute('title', copied ? 'Copied: ' + handle : 'Discord: ' + handle);
+
+        clearTimeout(resetTimer);
+        resetTimer = setTimeout(function () {
+            discordBtn.classList.remove('copied');
+            if (icon) icon.className = 'fab fa-discord';
+            discordBtn.setAttribute('title', 'Discord: ' + handle);
+        }, 1800);
+    }
+
+    discordBtn.addEventListener('click', function () {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(handle).then(function () {
+                flash(true);
+            }, function () {
+                flash(false);
+            });
+        } else {
+            flash(false);
+        }
+    });
 });

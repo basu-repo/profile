@@ -11,31 +11,21 @@ declare(strict_types=1);
  */
 
 require_once base_path('app/Controllers/HomeController.php');
-require_once base_path('app/Controllers/AboutController.php');
-require_once base_path('app/Controllers/ContactController.php');
 require_once base_path('app/Controllers/ContactFormController.php');
-require_once base_path('app/Controllers/NowController.php');
-require_once base_path('app/Controllers/ResearchController.php');
 require_once base_path('app/Controllers/Admin/AuthController.php');
 require_once base_path('app/Controllers/Admin/DashboardController.php');
 require_once base_path('app/Controllers/Admin/MessageController.php');
-require_once base_path('app/Controllers/Admin/EntryController.php');
 require_once base_path('app/Controllers/Admin/ContentController.php');
 
 return [
     // ------------------------------------------------------------- public
     'GET /' => static fn(): mixed => home_index(),
-    'GET /about' => static fn(): mixed => about_index(),
-    'GET /contact' => static fn(): mixed => contact_index(),
     'GET|POST /contact/submit' => static fn(): mixed => contact_submit(),
     // Browsers holding a cached copy of the old script.js still post here.
     // It is a route rather than a rewrite because an internal rewrite leaves
     // REQUEST_URI pointing at the original address, which is what the router
     // matches on -- so the rewrite never reached this handler.
     'GET|POST /submit-form.php' => static fn(): mixed => contact_submit(),
-    'GET /now' => static fn(): mixed => now_index(),
-    'GET /research' => static fn(): mixed => research_index(),
-    'GET /research/{slug}' => static fn(array $p): mixed => research_show($p),
 
     // -------------------------------------------------------------- admin
     'GET /admin' => static fn(): mixed => admin_index(),
@@ -46,10 +36,6 @@ return [
 
     'GET|POST /admin/messages' => static fn(): mixed => admin_messages_index(),
     'GET|POST /admin/messages/{id}' => static fn(array $p): mixed => admin_messages_show($p),
-
-    'GET|POST /admin/entries' => static fn(): mixed => admin_entries_index(),
-    'GET|POST /admin/entries/new' => static fn(): mixed => admin_entries_form(),
-    'GET|POST /admin/entries/{id}/edit' => static fn(array $p): mixed => admin_entries_form($p),
 
     'GET|POST /admin/content' => static fn(): mixed => admin_content_index(),
 ];

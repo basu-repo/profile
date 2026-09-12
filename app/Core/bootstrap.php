@@ -18,7 +18,6 @@ require_once __DIR__ . '/view.php';
 require_once __DIR__ . '/router.php';
 
 require_once base_path('app/Models/SiteContent.php');
-require_once base_path('app/Models/Entry.php');
 require_once base_path('app/Models/Message.php');
 require_once base_path('app/Models/AdminUser.php');
 

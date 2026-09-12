@@ -49,14 +49,6 @@ Options -Indexes
   RewriteCond %{THE_REQUEST} \s/+index\.(php|html)[\s?] [NC]
   RewriteRule ^ / [R=301,L]
 
-  RewriteRule ^about\.(php|html)$ /about [R=301,L]
-  RewriteRule ^contact\.(php|html)$ /contact [R=301,L]
-  RewriteRule ^now\.php$ /now [R=301,L]
-
-  RewriteCond %{QUERY_STRING} (?:^|&)slug=([A-Za-z0-9_-]+)
-  RewriteRule ^research\.php$ /research/%1? [R=301,L]
-  RewriteRule ^research\.php$ /research [R=301,L]
-
   # /submit-form.php is handled by a route, not a rule here: a redirect would
   # drop the POST body, and an internal rewrite leaves REQUEST_URI unchanged so
   # the router would never see the new path.
@@ -64,15 +56,10 @@ Options -Indexes
   RewriteRule ^admin/index\.php$ /admin [R=301,L]
   RewriteRule ^admin/(dashboard|login|logout|setup|content)\.php$ /admin/$1 [R=301,L]
   RewriteRule ^admin/messages\.php$ /admin/messages [R=301,L,QSA]
-  RewriteRule ^admin/entries\.php$ /admin/entries [R=301,L,QSA]
 
   RewriteCond %{QUERY_STRING} (?:^|&)id=([0-9]+)
   RewriteRule ^admin/message\.php$ /admin/messages/%1? [R=301,L]
   RewriteRule ^admin/message\.php$ /admin/messages [R=301,L]
-
-  RewriteCond %{QUERY_STRING} (?:^|&)id=([0-9]+)
-  RewriteRule ^admin/entry\.php$ /admin/entries/%1/edit? [R=301,L]
-  RewriteRule ^admin/entry\.php$ /admin/entries/new [R=301,L]
 
   # ---------------------------------------------------------------------
   # Front controller: anything that is not a real file or directory is a
